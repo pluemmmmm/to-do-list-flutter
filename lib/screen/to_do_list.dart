@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ToDoList extends StatefulWidget {
-  const ToDoList({super.key});
+  final Map<String, dynamic>? userData;
+  const ToDoList({
+    super.key, 
+    this.userData
+  });
 
   @override
   _ToDoListState createState() => _ToDoListState();
 }
 
 class _ToDoListState extends State<ToDoList> {
-  bool isChecked = false; // Moved outside of build method
+  bool isChecked = false; 
+  Map<String, dynamic>? userData;
+  String firstName = '';
+  String lastName = ''; 
+  String userId = '';
+
+  @override
+  void initState() {
+    userData = widget.userData;
+    firstName = userData?['user_fname'] ?? '';
+    lastName = userData?['user_lname'] ?? '';
+    userId = userData?['user_id']?.toString() ?? '';
+    print('1111: ${widget.userData}');
+    print('2222: $userId');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? userData =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-    String firstName = userData?['user_fname'] ?? '';
-    String lastName = userData?['user_lname'] ?? '';
-    int userId = userData?['user_id'] ?? 0;
-
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -75,7 +89,16 @@ class _ToDoListState extends State<ToDoList> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50.0),
                               child: GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  await prefs.remove('user_id');
+                                  await prefs.remove('user_email');
+                                  await prefs.remove('user_fname');
+                                  await prefs.remove('user_lname');
+                                  await prefs.remove('is_logged_in'); 
+
+                                  print('🔹 Sign Out: SharedPreferences ถูกล้างข้อมูลเรียบร้อย');
+
                                   Navigator.pushReplacementNamed(context, '/home');
                                 },
                                 child: Row(
