@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_app/screen/add_to_do.dart';
-import 'package:my_app/screen/sign_up.dart';
-import 'package:my_app/screen/to_do_list.dart';
+import 'package:my_app/screen/add_to_do_screen.dart';
+import 'package:my_app/screen/sign_up_screen.dart';
+import 'package:my_app/screen/to_do_list_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,21 +45,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus();
+    Future.delayed(Duration(seconds: 3), () {
+      checkLoginStatus();
+    });
   }
 
   Future<void> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-    String userId = (prefs.getInt('user_id') ?? '').toString();
+    String userId = prefs.getString('user_id') ?? '';
     String userFname = prefs.getString('user_fname') ?? '';
     String userLname = prefs.getString('user_lname') ?? '';
-    // print('888 ${prefs.getString('user_id')}');
-    // print('78 $isLoggedIn');
+    // print('1111 $isLoggedIn');
+    // print('2222 $userId');
+    // print('3333 $userFname');
+    // print('4444 $userLname');
 
     if (isLoggedIn) {
-      // Navigator.of(context).pushReplacementNamed('/to_do_list');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ToDoList(userData: {'user_id': userId, 'user_fname': userFname, 'user_lname': userLname})));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ToDoList(
+            userData: {
+              'user_id': userId,
+              'user_fname': userFname,
+              'user_lname': userLname,
+            },
+          ),
+        ),
+      );
     } else {
       Navigator.of(context).pushReplacementNamed('/home');
     }
@@ -107,8 +121,10 @@ class SignIn extends StatelessWidget {
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = jsonDecode(response.body);
 
-          if (data.containsKey('user_id') && data.containsKey('user_email') &&
-              data.containsKey('user_fname') && data.containsKey('user_lname')) {
+          if (data.containsKey('user_id') &&
+              data.containsKey('user_email') &&
+              data.containsKey('user_fname') &&
+              data.containsKey('user_lname')) {
             // Save user data to SharedPreferences
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.setString('user_id', data['user_id'].toString());
@@ -117,8 +133,12 @@ class SignIn extends StatelessWidget {
             await prefs.setString('user_lname', data['user_lname']);
             await prefs.setBool('is_logged_in', true);
 
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ToDoList(userData: data,))
-            );
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ToDoList(
+                          userData: data,
+                        )));
           } else {
             print('API response does not contain expected keys');
             ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +148,8 @@ class SignIn extends StatelessWidget {
         } else {
           print('Failed to sign in: ${response.statusCode}');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to sign in: ${response.statusCode}')),
+            SnackBar(
+                content: Text('Failed to sign in: ${response.statusCode}')),
           );
         }
       } catch (e) {
@@ -138,9 +159,11 @@ class SignIn extends StatelessWidget {
         );
       }
     }
+
     return Scaffold(
       // appBar: AppBar(),
-      resizeToAvoidBottomInset: false, //for prevent the keyboard from pushing the background
+      resizeToAvoidBottomInset:
+          false, //for prevent the keyboard from pushing the background
       body: Stack(
         children: [
           Image.asset(
@@ -217,38 +240,38 @@ class SignIn extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Padding(
-                  padding: EdgeInsets.only(left: 50.0, right: 50.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.6),
-                          spreadRadius: 1,
-                          blurRadius: 1,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        labelText: 'Password',
-                        filled: true,
-                        fillColor: Colors.transparent,
+                    padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.6),
+                            spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
+                      child: TextFormField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'Password',
+                          filled: true,
+                          fillColor: Colors.transparent,
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                   ),
-                ),
                   const SizedBox(height: 2),
                   Padding(
                     padding: EdgeInsets.only(left: 225.0),
@@ -270,7 +293,10 @@ class SignIn extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
+                          colors: <Color>[
+                            Color.fromRGBO(76, 197, 153, 1),
+                            Color.fromRGBO(13, 122, 92, 1),
+                          ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -282,7 +308,8 @@ class SignIn extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            signIn(emailController.text, passwordController.text);
+                            signIn(
+                                emailController.text, passwordController.text);
                           }
                         },
                         child: const Text(

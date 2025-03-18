@@ -16,7 +16,8 @@ class SignUp extends StatelessWidget {
     final TextEditingController userLnameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    Future<void> signUp(String email, String password, String userFname, String userLname) async {
+    Future<void> signUp(String email, String password, String userFname,
+        String userLname) async {
       try {
         final response = await http.post(
           Uri.parse('http://10.91.114.48:6004/api/create_user'),
@@ -25,52 +26,64 @@ class SignUp extends StatelessWidget {
             'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
           },
           body: jsonEncode(<String, String>{
-            'user_fname' : userFname,
-            'user_lname' : userLname,
+            'user_fname': userFname,
+            'user_lname': userLname,
             'user_email': email,
             'user_password': password,
           }),
         );
         // print('333 ${response.statusCode}');
-        print('444 ${response.body}');
+        // print('444 ${response.body}');
         if (response.statusCode == 200) {
           Navigator.pushReplacementNamed(
             context,
             '/home',
           );
-        } else if (response.statusCode == 400 && response.body == '{"message":"This e-mail has already been used.."}') {
+        } else if (response.statusCode == 400 &&
+            response.body ==
+                '{"message":"This e-mail has already been used.."}') {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return Center(
-                child: AlertDialog(
-                  title: Center(child: Text('Alert')),
-                  content: Text('Email already exists'),
-                  actions: <Widget>[
-                    Container(
+              return AlertDialog(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.warning, color: Colors.orange, size: 40.0,),
+                  ],
+                ),
+                content:Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
+                actions: <Widget>[
+                  Center(
+                    child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
+                          colors: <Color>[
+                            Color.fromRGBO(76, 197, 153, 1),
+                            Color.fromRGBO(13, 122, 92, 1),
+                          ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
-                        borderRadius: BorderRadius.circular(5.0), // Adjust the border radius as needed
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       child: TextButton(
                         child: Text(
                           'OK',
-                          style: TextStyle(color: Colors.white,),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent, // Make the button background transparent
+                          backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           );
@@ -85,6 +98,7 @@ class SignUp extends StatelessWidget {
         );
       }
     }
+
     return Scaffold(
       // appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -96,7 +110,7 @@ class SignUp extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
           ),
-          SingleChildScrollView( 
+          SingleChildScrollView(
             child: Center(
               child: Form(
                 key: formKey,
@@ -112,7 +126,8 @@ class SignUp extends StatelessWidget {
                             alignment: Alignment.topLeft,
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacementNamed(context, '/home');
+                                Navigator.pushReplacementNamed(
+                                    context, '/home');
                               },
                               child: Image.asset(
                                 'assets/images/icon_arrow_left.png',
@@ -277,6 +292,7 @@ class SignUp extends StatelessWidget {
                             filled: true,
                             fillColor: Colors.transparent,
                           ),
+                          obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
@@ -293,7 +309,10 @@ class SignUp extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
+                            colors: <Color>[
+                            Color.fromRGBO(76, 197, 153, 1),
+                            Color.fromRGBO(13, 122, 92, 1),
+                          ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -305,7 +324,11 @@ class SignUp extends StatelessWidget {
                           ),
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-                              signUp(emailController.text, passwordController.text, userFnameController.text, userLnameController.text);
+                              signUp(
+                                  emailController.text,
+                                  passwordController.text,
+                                  userFnameController.text,
+                                  userLnameController.text);
                             }
                           },
                           child: const Text(
