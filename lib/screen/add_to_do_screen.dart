@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_app/screen/to_do_list_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddToDo extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -110,7 +109,7 @@ class _AddToDoState extends State<AddToDo> {
         'user_todo_list_completed': isSwitchedOn.toString(),
         'user_id': userId,
       });
-      print('Request Body: $body');
+      // print('Request Body: $body');
       final response = await http.post(
         Uri.parse('http://10.91.114.28:6004/api/create_todo'),
         headers: <String, String>{
@@ -119,12 +118,12 @@ class _AddToDoState extends State<AddToDo> {
         },
         body: body,
       );
-      print('Response Body: ${response.body}');
+      // print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         if (response.body == 'OK') {
           // Handle the plain text response
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('ToDo created successfully')),
+            const SnackBar(content: Text('ToDo created successfully')),
           );
           Navigator.pushReplacement(
             context,
@@ -151,13 +150,13 @@ class _AddToDoState extends State<AddToDo> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save')),
+          const SnackBar(content: Text('Failed to save')),
         );
       }
     } catch (e) {
       print('error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('No internet connection')),
       );
     }
   }
@@ -186,7 +185,7 @@ class _AddToDoState extends State<AddToDo> {
         if (response.body == 'OK') {
           // Handle the plain text response
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('ToDo created successfully')),
+            const SnackBar(content: Text('ToDo created successfully')),
           );
           Navigator.pushReplacement(
             context,
@@ -213,13 +212,13 @@ class _AddToDoState extends State<AddToDo> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save')),
+          const SnackBar(content: Text('Failed to save')),
         );
       }
     } catch (e) {
       print('error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('No internet connection')),
       );
     }
   }
@@ -236,7 +235,7 @@ class _AddToDoState extends State<AddToDo> {
               height: 105, // hieght
               padding: const EdgeInsets.only(left: 20, top: 50, bottom: 10), // เพิ่ม padding ด้านบน
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: <Color>[
                     Color.fromRGBO(76, 197, 153, 1),
                     Color.fromRGBO(13, 122, 92, 1),
@@ -255,7 +254,7 @@ class _AddToDoState extends State<AddToDo> {
                 ],
               ),
               child: Transform.translate(
-                offset: Offset(0, -5), // เลื่อนลง 10px
+                offset: const Offset(0, -5), // เลื่อนลง 10px
                 child: Row(
                   children: [
                     GestureDetector(
@@ -281,7 +280,7 @@ class _AddToDoState extends State<AddToDo> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(
+                    const Text(
                       'Add Your ToDo',
                       style: TextStyle(
                         color: Colors.white,
@@ -304,7 +303,7 @@ class _AddToDoState extends State<AddToDo> {
                   children: [
                     const SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                       child: Container(
                         height: 65.0, // กำหนดความสูงให้เท่ากับ Search
                         decoration: BoxDecoration(
@@ -315,18 +314,18 @@ class _AddToDoState extends State<AddToDo> {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
                         child: TextFormField(
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.w600,
                           ),
                           controller: userTodoListTitleController,
                           focusNode: titleFocus,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Title',
                             hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
@@ -341,7 +340,7 @@ class _AddToDoState extends State<AddToDo> {
                     ),
                     const SizedBox(height: 10),
                     Padding(
-                      padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                       child: Container(
                         height: 175.0, // กำหนดความสูงให้เท่ากับ Search
                         decoration: BoxDecoration(
@@ -352,18 +351,18 @@ class _AddToDoState extends State<AddToDo> {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
                         child: TextFormField(
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.w600,
                           ),
                           controller: userTodoListDescController,
                           focusNode: descFocus,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Description',
                             hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
@@ -389,7 +388,7 @@ class _AddToDoState extends State<AddToDo> {
                               color: Colors.grey.withOpacity(0.3),
                               spreadRadius: 2,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -402,11 +401,11 @@ class _AddToDoState extends State<AddToDo> {
                                 style: GoogleFonts.roboto(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0D7A5C),
+                                  color: const Color(0xFF0D7A5C),
                                 )
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -434,7 +433,7 @@ class _AddToDoState extends State<AddToDo> {
                         height: 70,
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
+                            gradient: const LinearGradient(
                               colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,

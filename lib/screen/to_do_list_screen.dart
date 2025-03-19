@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_app/screen/add_to_do_screen.dart';
@@ -55,7 +54,7 @@ class _ToDoListState extends State<ToDoList> {
           'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
         },
       );
-      print('7878 ${response.statusCode}');
+      // print('7878 ${response.statusCode}');
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -63,7 +62,7 @@ class _ToDoListState extends State<ToDoList> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('No internet connection')),
       );
       return [];
     }
@@ -81,7 +80,7 @@ class _ToDoListState extends State<ToDoList> {
       // print('7878 ${response.body}');
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete successfully')),
+          const SnackBar(content: Text('Delete successfully')),
         ); // Close the bottom sheet
         FocusScope.of(context).unfocus(); // Unfocus any text fields
         setState(() {}); // Refresh the UI
@@ -90,7 +89,7 @@ class _ToDoListState extends State<ToDoList> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('No internet connection')),
       );
     }
   }
@@ -101,7 +100,7 @@ class _ToDoListState extends State<ToDoList> {
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: <Color>[
                 Color.fromRGBO(76, 197, 153, 1),
                 Color.fromRGBO(13, 122, 92, 1),
@@ -115,7 +114,7 @@ class _ToDoListState extends State<ToDoList> {
                 color: Colors.black.withOpacity(0.3), // สีเงา
                 blurRadius: 4, // ค่าความเบลอของเงา
                 spreadRadius: 0, // ระยะกระจายของเงา
-                offset: Offset(0, 4), // ตำแหน่งเงา (x, y)
+                offset: const Offset(0, 4), // ตำแหน่งเงา (x, y)
               ),
             ],
           ),
@@ -129,13 +128,13 @@ class _ToDoListState extends State<ToDoList> {
               showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
-                  return Container(
+                  return SizedBox(
                     height: 270,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'SIGN OUT',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -143,7 +142,7 @@ class _ToDoListState extends State<ToDoList> {
                             ),
                           ),
                           const SizedBox(height: 13),
-                          Text(
+                          const Text(
                             'Do you want to log out?',
                             style: TextStyle(
                               fontSize: 14,
@@ -164,8 +163,7 @@ class _ToDoListState extends State<ToDoList> {
                                   await prefs.remove('user_lname');
                                   await prefs.remove('is_logged_in');
                                   
-                                  Navigator.pushReplacementNamed(
-                                      context, '/home');
+                                  Navigator.pushReplacementNamed(context, '/home');
                                 },
                                 child: Row(
                                   children: [
@@ -175,7 +173,7 @@ class _ToDoListState extends State<ToDoList> {
                                       height: 40,
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(
+                                    const Text(
                                       'Sign Out',
                                       style: TextStyle(
                                         fontSize: 18,
@@ -184,7 +182,7 @@ class _ToDoListState extends State<ToDoList> {
                                     ),
                                     // const Spacer(),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 150.0), // ปรับ padding ด้านขวา
+                                      padding: const EdgeInsets.only(left: 150.0),
                                       child: Image.asset(
                                         'assets/images/icon_arrow_right.png',
                                         width: 40,
@@ -215,7 +213,7 @@ class _ToDoListState extends State<ToDoList> {
               child: Center(
                 child: Text(
                   firstName[0], // แสดงตัวอักษรตัวแรกของ firstName
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24.0,
                     color: Color(0xFF4CC599),
                   ),
@@ -239,7 +237,7 @@ class _ToDoListState extends State<ToDoList> {
               ),
               Text(
                 '$firstName $lastName',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
@@ -265,7 +263,7 @@ class _ToDoListState extends State<ToDoList> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 1,
-                        offset: Offset(0, 1),
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
@@ -277,8 +275,8 @@ class _ToDoListState extends State<ToDoList> {
                           searchQuery = value.toLowerCase();
                         });
                       },
-                      style: TextStyle(fontSize: 18.0),
-                      decoration: InputDecoration(
+                      style: const TextStyle(fontSize: 18.0),
+                      decoration: const InputDecoration(
                         hintText: 'Search.......',
                         hintStyle: TextStyle(color: Colors.grey),
                         prefixIcon: Icon(Icons.search_sharp, color: Colors.grey),
@@ -296,7 +294,7 @@ class _ToDoListState extends State<ToDoList> {
                   builder: (context, snapshot) {
                     // print('1212 $snapshot');
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -321,7 +319,7 @@ class _ToDoListState extends State<ToDoList> {
                             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
                             child: Column(
                               children: [
-                                if (index != 0) SizedBox(height: 6.0),
+                                if (index != 0) const SizedBox(height: 6.0), //except first item
                                 Container(
                                   height: MediaQuery.of(context).size.height * 0.17,
                                   decoration: BoxDecoration(
@@ -332,7 +330,7 @@ class _ToDoListState extends State<ToDoList> {
                                         color: Colors.grey.withOpacity(0.3),
                                         spreadRadius: 2,
                                         blurRadius: 1,
-                                        offset: Offset(0, 1),
+                                        offset: const Offset(0, 1),
                                       ),
                                     ],
                                   ),
@@ -364,7 +362,7 @@ class _ToDoListState extends State<ToDoList> {
                                               crossAxisAlignment: CrossAxisAlignment.start, // จัดตำแหน่งให้เป็น start
                                               children: [
                                                 // Text('ID: ${item['user_todo_list_id']}'),
-                                                Container(
+                                                SizedBox(
                                                   width: MediaQuery.of(context).size.width * 0.8, // width scope
                                                   child: Text(
                                                     '${item['user_todo_list_title']}',
@@ -388,7 +386,7 @@ class _ToDoListState extends State<ToDoList> {
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.only(top: 7.0), // Adjust the top margin as needed
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     width: MediaQuery.of(context).size.width * 0.8, // width scope
                                                     child: Text(
                                                       '${item['user_todo_list_desc']}',
@@ -416,7 +414,7 @@ class _ToDoListState extends State<ToDoList> {
                                             showModalBottomSheet(
                                               context: context,
                                               builder: (BuildContext context) {
-                                                return Container(
+                                                return SizedBox(
                                                   height: 270,
                                                   child: Center(
                                                     child: Column(
@@ -428,7 +426,7 @@ class _ToDoListState extends State<ToDoList> {
                                                             padding: const EdgeInsets.only(left: 50.0, bottom: 5.0),
                                                             child: GestureDetector(
                                                               onTap: () {
-                                                                print('8989 ${item['user_todo_list_id']}');
+                                                                // print('8989 ${item['user_todo_list_id']}');
                                                                 Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
@@ -451,7 +449,7 @@ class _ToDoListState extends State<ToDoList> {
                                                                     height: 40,
                                                                   ),
                                                                   const SizedBox(width: 10),
-                                                                  Text(
+                                                                  const Text(
                                                                     'Edit',
                                                                     style: TextStyle(
                                                                       fontSize: 18,
@@ -490,13 +488,13 @@ class _ToDoListState extends State<ToDoList> {
                                                                   context: context,
                                                                   builder: (BuildContext context) {
                                                                     return AlertDialog(
-                                                                      title: Row(
+                                                                      title: const Row(
                                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                                         children: [
                                                                           Icon(Icons.warning, color: Colors.red, size: 40.0),
                                                                         ],
                                                                       ),
-                                                                      content: Text(
+                                                                      content: const Text(
                                                                         'Are you sure you want to delete?',
                                                                         textAlign: TextAlign.center,
                                                                         style: TextStyle(fontSize: 18),
@@ -507,7 +505,7 @@ class _ToDoListState extends State<ToDoList> {
                                                                           children: [
                                                                             Container(
                                                                               decoration: BoxDecoration(
-                                                                                gradient: LinearGradient(
+                                                                                gradient: const LinearGradient(
                                                                                   colors: <Color>[
                                                                                     Color.fromRGBO(169, 169, 169, 1), // Light gray color
                                                                                     Color.fromRGBO(105, 105, 105, 1), // Dark gray color
@@ -518,23 +516,23 @@ class _ToDoListState extends State<ToDoList> {
                                                                                 borderRadius: BorderRadius.circular(5.0),
                                                                               ),
                                                                               child: TextButton(
-                                                                                child: Text(
-                                                                                  'Cancel',
-                                                                                  style: TextStyle(
-                                                                                    color: Colors.white,
-                                                                                  ),
-                                                                                ),
                                                                                 style: TextButton.styleFrom(
                                                                                   backgroundColor: Colors.transparent,
                                                                                 ),
                                                                                 onPressed: () {
                                                                                   Navigator.of(context).pop();
                                                                                 },
+                                                                                child: const Text(
+                                                                                  'Cancel',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                  ),
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                             Container(
                                                                               decoration: BoxDecoration(
-                                                                                gradient: LinearGradient(
+                                                                                gradient: const LinearGradient(
                                                                                   colors: <Color>[
                                                                                     Color.fromRGBO(255, 0, 0, 1),
                                                                                     Color.fromRGBO(139, 0, 0, 1),
@@ -545,12 +543,6 @@ class _ToDoListState extends State<ToDoList> {
                                                                                 borderRadius: BorderRadius.circular(5.0),
                                                                               ),
                                                                               child: TextButton(
-                                                                                child: Text(
-                                                                                  'Delete',
-                                                                                  style: TextStyle(
-                                                                                    color: Colors.white,
-                                                                                  ),
-                                                                                ),
                                                                                 style: TextButton.styleFrom(
                                                                                   backgroundColor: Colors.transparent,
                                                                                 ),
@@ -559,6 +551,12 @@ class _ToDoListState extends State<ToDoList> {
                                                                                   Navigator.of(context).pop(); // Close the AlertDialog
                                                                                   Navigator.of(context).pop(); // Close the showModalBottomSheet
                                                                                 },
+                                                                                child: const Text(
+                                                                                  'Delete',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                  ),
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ],
@@ -576,7 +574,7 @@ class _ToDoListState extends State<ToDoList> {
                                                                     height: 40,
                                                                   ),
                                                                   const SizedBox(width: 10),
-                                                                  Text(
+                                                                  const Text(
                                                                     'Delete',
                                                                     style: TextStyle(
                                                                       fontSize: 18,
@@ -604,7 +602,7 @@ class _ToDoListState extends State<ToDoList> {
                                               },
                                             );
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.more_horiz,
                                             color: Colors.grey,
                                             size: 27.0,

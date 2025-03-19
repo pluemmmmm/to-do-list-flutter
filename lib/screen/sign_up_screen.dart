@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 
@@ -51,18 +50,18 @@ class _SignUpState extends State<SignUp> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Row(
+              title: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.warning, color: Colors.orange, size: 40.0,),
                 ],
               ),
-              content:Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
+              content:const Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
               actions: <Widget>[
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: <Color>[
                           Color.fromRGBO(76, 197, 153, 1),
                           Color.fromRGBO(13, 122, 92, 1),
@@ -73,18 +72,18 @@ class _SignUpState extends State<SignUp> {
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child: TextButton(
-                      child: Text(
-                        'OK',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.transparent,
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -94,12 +93,12 @@ class _SignUpState extends State<SignUp> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign up')),
+          const SnackBar(content: Text('Failed to sign up')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('No internet connection')),
       );
     }
   }
@@ -143,7 +142,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                         ),
-                        Center(
+                        const Center(
                           child: Text(
                             'SIGN UP',
                             style: TextStyle(
@@ -175,7 +174,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     const SizedBox(height: 40),
                     Padding(
-                      padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -185,7 +184,7 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.grey.withOpacity(0.6),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -193,7 +192,7 @@ class _SignUpState extends State<SignUp> {
                           controller: userFnameController,
                           focusNode: fnameFocusNode,
                           inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             labelText: 'First name',
                             filled: true,
@@ -213,7 +212,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -223,7 +222,7 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.grey.withOpacity(0.6),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -231,7 +230,7 @@ class _SignUpState extends State<SignUp> {
                           controller: userLnameController,
                           focusNode: lnameFocusNode,
                           inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Last name',
                             filled: true,
@@ -251,7 +250,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -261,7 +260,7 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.grey.withOpacity(0.6),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -269,7 +268,7 @@ class _SignUpState extends State<SignUp> {
                           controller: emailController,
                           focusNode: emailFocusNode,
                           inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Email',
                             filled: true,
@@ -291,7 +290,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -301,7 +300,7 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.grey.withOpacity(0.6),
                               spreadRadius: 1,
                               blurRadius: 1,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -346,7 +345,7 @@ class _SignUpState extends State<SignUp> {
                       height: 70,
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: <Color>[
                               Color.fromRGBO(76, 197, 153, 1),
                               Color.fromRGBO(13, 122, 92, 1),
