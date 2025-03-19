@@ -4,104 +4,110 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final TextEditingController userFnameController = TextEditingController();
-    final TextEditingController userLnameController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+  _SignUpState createState() => _SignUpState();
+}
 
-    Future<void> signUp(String email, String password, String userFname,
-        String userLname) async {
-      try {
-        final response = await http.post(
-          Uri.parse('http://10.91.114.48:6004/api/create_user'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-          },
-          body: jsonEncode(<String, String>{
-            'user_fname': userFname,
-            'user_lname': userLname,
-            'user_email': email,
-            'user_password': password,
-          }),
+class _SignUpState extends State<SignUp> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController userFnameController = TextEditingController();
+  final TextEditingController userLnameController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+  final FocusNode fnameFocusNode = FocusNode();
+  final FocusNode lnameFocusNode = FocusNode();
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+
+  Future<void> signUp(String email, String password, String userFname, String userLname) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.91.114.28:6004/api/create_user'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
+        },
+        body: jsonEncode(<String, String>{
+          'user_fname': userFname,
+          'user_lname': userLname,
+          'user_email': email,
+          'user_password': password,
+        }),
+      );
+      if (response.statusCode == 200) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/home',
         );
-        // print('333 ${response.statusCode}');
-        // print('444 ${response.body}');
-        if (response.statusCode == 200) {
-          Navigator.pushReplacementNamed(
-            context,
-            '/home',
-          );
-        } else if (response.statusCode == 400 &&
-            response.body ==
-                '{"message":"This e-mail has already been used.."}') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.warning, color: Colors.orange, size: 40.0,),
-                  ],
-                ),
-                content:Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
-                actions: <Widget>[
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: <Color>[
-                            Color.fromRGBO(76, 197, 153, 1),
-                            Color.fromRGBO(13, 122, 92, 1),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        borderRadius: BorderRadius.circular(5.0),
+      } else if (response.statusCode == 400 &&
+          response.body == '{"message":"This e-mail has already been used.."}') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.warning, color: Colors.orange, size: 40.0,),
+                ],
+              ),
+              content:Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
+              actions: <Widget>[
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(76, 197, 153, 1),
+                          Color.fromRGBO(13, 122, 92, 1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
-                      child: TextButton(
-                        child: Text(
-                          'OK',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    child: TextButton(
+                      child: Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
                         ),
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
                       ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ),
-                ],
-              );
-            },
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to sign up')),
-          );
-        }
-      } catch (e) {
+                ),
+              ],
+            );
+          },
+        );
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No internet connection')),
+          SnackBar(content: Text('Failed to sign up')),
         );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No internet connection')),
+      );
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true, // can up or down for touch
       body: Stack(
         children: [
           Image.asset(
@@ -185,12 +191,17 @@ class SignUp extends StatelessWidget {
                         ),
                         child: TextFormField(
                           controller: userFnameController,
+                          focusNode: fnameFocusNode,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'First name',
                             filled: true,
                             fillColor: Colors.transparent,
                           ),
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(lnameFocusNode);
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your first name';
@@ -218,12 +229,17 @@ class SignUp extends StatelessWidget {
                         ),
                         child: TextFormField(
                           controller: userLnameController,
+                          focusNode: lnameFocusNode,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Last name',
                             filled: true,
                             fillColor: Colors.transparent,
                           ),
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(emailFocusNode);
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your last name';
@@ -251,16 +267,21 @@ class SignUp extends StatelessWidget {
                         ),
                         child: TextFormField(
                           controller: emailController,
+                          focusNode: emailFocusNode,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Email',
                             filled: true,
                             fillColor: Colors.transparent,
                           ),
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(passwordFocusNode);
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
-                            } else if (!value.contains('@')) {
+                            } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -286,13 +307,30 @@ class SignUp extends StatelessWidget {
                         ),
                         child: TextFormField(
                           controller: passwordController,
+                          focusNode: passwordFocusNode,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Password',
                             filled: true,
                             fillColor: Colors.transparent,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureText ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.grey,
+                                size: 20.0,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
                           ),
-                          obscureText: true,
+                          obscureText: _obscureText,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).unfocus();
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
@@ -310,9 +348,9 @@ class SignUp extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: <Color>[
-                            Color.fromRGBO(76, 197, 153, 1),
-                            Color.fromRGBO(13, 122, 92, 1),
-                          ],
+                              Color.fromRGBO(76, 197, 153, 1),
+                              Color.fromRGBO(13, 122, 92, 1),
+                            ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),

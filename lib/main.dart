@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_app/controller/network_controller.dart';
+import 'package:my_app/dependency_injection.dart';
 import 'package:my_app/screen/add_to_do_screen.dart';
 import 'package:my_app/screen/sign_up_screen.dart';
 import 'package:my_app/screen/to_do_list_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  DependencyInjection.init(); // call Injection
   runApp(MyApp());
 }
 
@@ -17,7 +23,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -95,71 +101,125 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+  _SignInState createState() => _SignInState();
+}
 
-    Future<void> signIn(String email, String password) async {
-      try {
-        final response = await http.post(
-          Uri.parse('http://10.91.114.48:6004/api/login'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-          },
-          body: jsonEncode(<String, String>{
-            'user_email': email,
-            'user_password': password,
-          }),
-        );
-        // print('3333: ${response.statusCode}');
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> data = jsonDecode(response.body);
+class _SignInState extends State<SignIn> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final NetworkController networkController = Get.find<NetworkController>();
+  bool _obscureText = true;
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+  
+  Future<void> signIn(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.91.114.28:6004/api/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
+        },
+        body: jsonEncode(<String, String>{
+          'user_email': email,
+          'user_password': password,
+        }),
+      );
+      // print('1234: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
 
-          if (data.containsKey('user_id') &&
-              data.containsKey('user_email') &&
-              data.containsKey('user_fname') &&
-              data.containsKey('user_lname')) {
-            // Save user data to SharedPreferences
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString('user_id', data['user_id'].toString());
-            await prefs.setString('user_email', data['user_email']);
-            await prefs.setString('user_fname', data['user_fname']);
-            await prefs.setString('user_lname', data['user_lname']);
-            await prefs.setBool('is_logged_in', true);
+        if (data.containsKey('user_id') &&
+            data.containsKey('user_email') &&
+            data.containsKey('user_fname') &&
+            data.containsKey('user_lname')) {
+          // Save user data to SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('user_id', data['user_id'].toString());
+          await prefs.setString('user_email', data['user_email']);
+          await prefs.setString('user_fname', data['user_fname']);
+          await prefs.setString('user_lname', data['user_lname']);
+          await prefs.setBool('is_logged_in', true);
 
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ToDoList(
-                          userData: data,
-                        )));
-          } else {
-            print('API response does not contain expected keys');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Invalid response from server')),
-            );
-          }
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ToDoList(
+                        userData: data,
+                      )));
         } else {
-          print('Failed to sign in: ${response.statusCode}');
+          print('API response does not contain expected keys');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Failed to sign in: ${response.statusCode}')),
+            SnackBar(content: Text('Invalid response from server')),
           );
         }
-      } catch (e) {
-        // print('Error: $e');
+      } else if (response.statusCode == 400 && response.body == '{"message":"Email or password is incorrect."}') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.warning, color: Colors.orange, size: 40.0,),
+                ],
+              ),
+              content:Text('Email or password is incorrect', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
+              actions: <Widget>[
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(76, 197, 153, 1),
+                          Color.fromRGBO(13, 122, 92, 1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    child: TextButton(
+                      child: Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        print('Failed to sign in: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No internet connection')),
+          SnackBar(content: Text('Failed to sign in: ${response.statusCode}')),
         );
       }
+    } catch (e) {
+      print('An error occurred: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(),
       resizeToAvoidBottomInset:
@@ -172,6 +232,16 @@ class SignIn extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
           ),
+          // Obx(() {
+          //    print("Network status: ${networkController.isConnected.value}");
+          //   return Text(
+          //     networkController.isConnected.value ? "Connected" : "No Internet",
+          //     style: TextStyle(
+          //       fontSize: 20,
+          //       color: networkController.isConnected.value ? Colors.green : Colors.red,
+          //     ),
+          //   );
+          // }),
           SingleChildScrollView(
             child: Form(
               key: formKey,
@@ -223,12 +293,17 @@ class SignIn extends StatelessWidget {
                       ),
                       child: TextFormField(
                         controller: emailController,
+                        focusNode: emailFocusNode,
+                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], // Add this line
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           labelText: 'Email',
                           filled: true,
                           fillColor: Colors.transparent,
                         ),
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(passwordFocusNode);
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
@@ -256,13 +331,30 @@ class SignIn extends StatelessWidget {
                       ),
                       child: TextFormField(
                         controller: passwordController,
+                        focusNode: passwordFocusNode,
+                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], // Add this line
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           labelText: 'Password',
                           filled: true,
                           fillColor: Colors.transparent,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.grey,
+                              size: 20.0,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
                         ),
-                        obscureText: true,
+                        obscureText: _obscureText,
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
