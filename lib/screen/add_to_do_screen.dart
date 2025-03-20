@@ -402,13 +402,20 @@ void _showErrorDialog(BuildContext context, String title, String message) {
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                                 ),
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
                                 onFieldSubmitted: (_) {
                                   titleFocus.unfocus();
                                   FocusScope.of(context).requestFocus(descFocus);
                                 },
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your title';
+                                    return 'Please enter your description';
+                                  }
+                                  if (value.trim().isEmpty) {
+                                    return 'Description cannot be just spaces';
+                                  }
+                                  if (value.startsWith(' ') || value.endsWith(' ')) {
+                                    return 'Description cannot start or end with a space';
                                   }
                                   return null;
                                 },
@@ -450,12 +457,19 @@ void _showErrorDialog(BuildContext context, String title, String message) {
                               ),
                               maxLines: 7, // line
                               textInputAction: TextInputAction.done, // เปลี่ยนการกระทำของปุ่ม Enter
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
                               onFieldSubmitted: (_) {
                                 FocusScope.of(context).unfocus();
                               },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your description';
+                                }
+                                if (value.trim().isEmpty) {
+                                  return 'Description cannot be just spaces';
+                                }
+                                if (value.startsWith(' ') || value.endsWith(' ')) {
+                                  return 'Description cannot start or end with a space';
                                 }
                                 return null;
                               },

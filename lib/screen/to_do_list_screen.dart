@@ -425,7 +425,7 @@ class _ToDoListState extends State<ToDoList> {
                                   children: [
                                     if (index != 0) const SizedBox(height: 6.0), //except first item
                                     Container(
-                                      height: MediaQuery.of(context).size.height * 0.17,
+                                      height: 140.0,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12.0),
