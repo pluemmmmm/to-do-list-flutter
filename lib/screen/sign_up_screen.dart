@@ -201,6 +201,7 @@ class _SignUpState extends State<SignUp> {
                               filled: true,
                               fillColor: Colors.transparent,
                             ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context).requestFocus(lnameFocusNode);
                             },
@@ -239,6 +240,7 @@ class _SignUpState extends State<SignUp> {
                               filled: true,
                               fillColor: Colors.transparent,
                             ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context).requestFocus(emailFocusNode);
                             },
@@ -277,6 +279,7 @@ class _SignUpState extends State<SignUp> {
                               filled: true,
                               fillColor: Colors.transparent,
                             ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context).requestFocus(passwordFocusNode);
                             },
@@ -330,6 +333,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                             ),
                             obscureText: _obscureText,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context).unfocus();
                             },
@@ -346,7 +350,7 @@ class _SignUpState extends State<SignUp> {
                       Padding(
                         padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                         child: SizedBox(
-                          width: 350,
+                          width: double.infinity,
                           height: 70,
                           child: Container(
                             decoration: BoxDecoration(

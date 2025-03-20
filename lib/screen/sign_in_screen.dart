@@ -53,13 +53,11 @@ class _SignInState extends State<SignIn> {
           await prefs.setString('user_lname', data['user_lname']);
           await prefs.setBool('is_logged_in', true);
 
-          Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ToDoList(
-                        userData: data,
-                      )));
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => ToDoList(userData: data)),
+            (Route<dynamic> route) => false,
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Invalid response from server')),
@@ -129,8 +127,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(),
-      resizeToAvoidBottomInset:
-          false, //for prevent the keyboard from pushing the background
+      resizeToAvoidBottomInset: false, //for prevent the keyboard from pushing the background
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -212,12 +209,15 @@ class _SignInState extends State<SignIn> {
                             filled: true,
                             fillColor: Colors.transparent,
                           ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           onFieldSubmitted: (_) {
                             FocusScope.of(context).requestFocus(passwordFocusNode);
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
+                            } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
+                              return 'Please enter a valid email';
                             }
                             return null;
                           },
@@ -263,6 +263,7 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                           obscureText: _obscureText,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           onFieldSubmitted: (_) {
                             FocusScope.of(context).unfocus();
                           },
@@ -293,7 +294,7 @@ class _SignInState extends State<SignIn> {
                     Padding(
                       padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: SizedBox(
-                        width: 350,
+                        width: double.infinity,
                         height: 70,
                         child: Container(
                           decoration: BoxDecoration(
@@ -331,7 +332,7 @@ class _SignInState extends State<SignIn> {
                     Padding(
                       padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                       child: SizedBox(
-                        width: 350,
+                        width: double.infinity,
                         height: 70,
                         child: Container(
                           decoration: BoxDecoration(
