@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -107,283 +106,287 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true, // can up or down for touch
-      body: Stack(
-        children: [
-          Image.asset(
-            'assets/images/background.png',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          SingleChildScrollView(
-            child: Center(
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 60),
-                    Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushReplacementNamed(
-                                    context, '/home');
-                              },
-                              child: Image.asset(
-                                'assets/images/icon_arrow_left.png',
-                                width: 40,
-                                height: 40,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Stack(
+          children: [
+            Image.asset(
+              'assets/images/background.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            SingleChildScrollView(
+              child: Center(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 60),
+                      Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacementNamed(
+                                      context, '/home');
+                                },
+                                child: Image.asset(
+                                  'assets/images/icon_arrow_left.png',
+                                  width: 40,
+                                  height: 40,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const Center(
-                          child: Text(
-                            'SIGN UP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
+                          const Center(
+                            child: Text(
+                              'SIGN UP',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Please enter the information',
-                      style: TextStyle(
-                        fontSize: 20,
+                        ],
                       ),
-                    ),
-                    const Text(
-                      'below to access.',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Image.asset(
-                      'assets/images/signup_logo.png',
-                      width: 100,
-                      height: 100,
-                    ),
-                    const SizedBox(height: 40),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.6),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Please enter the information',
+                        style: TextStyle(
+                          fontSize: 20,
                         ),
-                        child: TextFormField(
-                          controller: userFnameController,
-                          focusNode: fnameFocusNode,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'First name',
-                            filled: true,
-                            fillColor: Colors.transparent,
+                      ),
+                      const Text(
+                        'below to access.',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Image.asset(
+                        'assets/images/signup_logo.png',
+                        width: 100,
+                        height: 100,
+                      ),
+                      const SizedBox(height: 40),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.6),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                           ),
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(lnameFocusNode);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your first name';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.6),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
+                          child: TextFormField(
+                            controller: userFnameController,
+                            focusNode: fnameFocusNode,
+                            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'First name',
+                              filled: true,
+                              fillColor: Colors.transparent,
                             ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: userLnameController,
-                          focusNode: lnameFocusNode,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Last name',
-                            filled: true,
-                            fillColor: Colors.transparent,
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context).requestFocus(lnameFocusNode);
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your first name';
+                              }
+                              return null;
+                            },
                           ),
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(emailFocusNode);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your last name';
-                            }
-                            return null;
-                          },
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.6),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: emailController,
-                          focusNode: emailFocusNode,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Email',
-                            filled: true,
-                            fillColor: Colors.transparent,
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.6),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                           ),
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(passwordFocusNode);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
-                            } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
-                              return 'Please enter a valid email';
-                            }
-                            return null;
-                          },
+                          child: TextFormField(
+                            controller: userLnameController,
+                            focusNode: lnameFocusNode,
+                            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'Last name',
+                              filled: true,
+                              fillColor: Colors.transparent,
+                            ),
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context).requestFocus(emailFocusNode);
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your last name';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.6),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.6),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            controller: emailController,
+                            focusNode: emailFocusNode,
+                            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'Email',
+                              filled: true,
+                              fillColor: Colors.transparent,
                             ),
-                          ],
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context).requestFocus(passwordFocusNode);
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
+                                return 'Please enter a valid email';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                        child: TextFormField(
-                          controller: passwordController,
-                          focusNode: passwordFocusNode,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Password',
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureText ? Icons.visibility_off : Icons.visibility,
-                                color: Colors.grey,
-                                size: 20.0,
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.6),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            controller: passwordController,
+                            focusNode: passwordFocusNode,
+                            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'Password',
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                                  color: Colors.grey,
+                                  size: 20.0,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                            ),
+                            obscureText: _obscureText,
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context).unfocus();
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 55),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                        child: SizedBox(
+                          width: 350,
+                          height: 70,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: <Color>[
+                                  Color.fromRGBO(76, 197, 153, 1),
+                                  Color.fromRGBO(13, 122, 92, 1),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.transparent,
                               ),
                               onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
+                                if (formKey.currentState!.validate()) {
+                                  signUp(emailController.text, passwordController.text, userFnameController.text, userLnameController.text);
+                                }
                               },
-                            ),
-                          ),
-                          obscureText: _obscureText,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).unfocus();
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 55),
-                    SizedBox(
-                      width: 350,
-                      height: 70,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: <Color>[
-                              Color.fromRGBO(76, 197, 153, 1),
-                              Color.fromRGBO(13, 122, 92, 1),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                          ),
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              signUp(
-                                  emailController.text,
-                                  passwordController.text,
-                                  userFnameController.text,
-                                  userLnameController.text);
-                            }
-                          },
-                          child: const Text(
-                            'SIGN UP',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
+                              child: const Text(
+                                'SIGN UP',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

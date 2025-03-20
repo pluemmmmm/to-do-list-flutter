@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
@@ -109,7 +108,6 @@ class _AddToDoState extends State<AddToDo> {
         'user_todo_list_completed': isSwitchedOn.toString(),
         'user_id': userId,
       });
-      // print('Request Body: $body');
       final response = await http.post(
         Uri.parse('http://10.91.114.28:6004/api/create_todo'),
         headers: <String, String>{
@@ -120,8 +118,22 @@ class _AddToDoState extends State<AddToDo> {
       );
       // print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
+      final responseData = response.body;
+      // print('Response: $responseData');
+      try {
+        final Map<String, dynamic> data = jsonDecode(responseData);
+        if (data.containsKey('code') && data['code'] == 'ER_DATA_TOO_LONG') {
+          _showErrorDialog(context, 'ข้อมูลยาวเกินไป', 'กรุณาปรับลดความยาวของข้อมูลที่กรอก');
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ToDoList(userData: data),
+          ),
+        );
+      } catch (e) {
         if (response.body == 'OK') {
-          // Handle the plain text response
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ToDo created successfully')),
           );
@@ -138,17 +150,12 @@ class _AddToDoState extends State<AddToDo> {
             ),
           );
         } else {
-          final Map<String, dynamic> data = jsonDecode(response.body);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ToDoList(
-                userData: data,
-              ),
-            ),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('An unexpected error occurred.')),
           );
         }
-      } else {
+      }
+    } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to save')),
         );
@@ -163,27 +170,41 @@ class _AddToDoState extends State<AddToDo> {
 
   Future<void>updateToDo(String userTodoListTitle, String userTodoListDesc) async {
     try {
-      final body = jsonEncode(<String, String>{
-        'user_todo_list_id': userTodoListId,
-        'user_todo_list_title': userTodoListTitle,
-        'user_todo_list_desc': userTodoListDesc,
-        'user_todo_list_completed': isSwitchedOn.toString(),
-        'user_id': userId,
-        'user_todo_type_id': '1',
-      });
-      // print('Request Body: $body');
-      final response = await http.post(
-        Uri.parse('http://10.91.114.28:6004/api/update_todo'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-        },
-        body: body,
-      );
-      // print('Response Body: ${response.body}');
-      if (response.statusCode == 200) {
+    final body = jsonEncode({
+      'user_todo_list_id': userTodoListId,
+      'user_todo_list_title': userTodoListTitle,
+      'user_todo_list_desc': userTodoListDesc,
+      'user_todo_list_completed': isSwitchedOn.toString(),
+      'user_id': userId,
+      'user_todo_type_id': '1',
+    });
+
+    final response = await http.post(
+      Uri.parse('http://10.91.114.28:6004/api/update_todo'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      // print('Response: $responseData');
+      try {
+        final Map<String, dynamic> data = jsonDecode(responseData);
+        if (data.containsKey('code') && data['code'] == 'ER_DATA_TOO_LONG') {
+          _showErrorDialog(context, 'ข้อมูลยาวเกินไป', 'กรุณาปรับลดความยาวของข้อมูลที่กรอก');
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ToDoList(userData: data),
+          ),
+        );
+      } catch (e) {
         if (response.body == 'OK') {
-          // Handle the plain text response
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ToDo created successfully')),
           );
@@ -200,40 +221,39 @@ class _AddToDoState extends State<AddToDo> {
             ),
           );
         } else {
-          final Map<String, dynamic> data = jsonDecode(response.body);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ToDoList(
-                userData: data,
-              ),
-            ),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('An unexpected error occurred.')),
           );
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save')),
-        );
       }
-    } catch (e) {
-      print('error: $e');
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection')),
+        const SnackBar(content: Text('Failed to update ToDo')),
       );
     }
+  } catch (e) {
+    print('Error: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No internet connection')),
+    );
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          // Custom AppBar
-          PreferredSize(
-            preferredSize: const Size.fromHeight(105.0), // hieght
+void _showErrorDialog(BuildContext context, String title, String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.warning, color: Colors.orange, size: 40.0,),
+          ],
+        ),
+        content:const Text('Input is too long', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
+        actions: <Widget>[
+          Center(
             child: Container(
-              height: 105, // hieght
-              padding: const EdgeInsets.only(left: 20, top: 50, bottom: 10), // เพิ่ม padding ด้านบน
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: <Color>[
@@ -242,238 +262,290 @@ class _AddToDoState extends State<AddToDo> {
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: [1.0, 1.0],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 3,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 2),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                ],
-              ),
-              child: Transform.translate(
-                offset: const Offset(0, -5), // เลื่อนลง 10px
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ToDoList(
-                              userData: {
-                                'user_id': userId,
-                                'user_fname': userFname,
-                                'user_lname': userLname,
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Image.asset(
-                        'assets/images/icon_arrow_left.png',
-                        color: Colors.white,
-                        width: 40,
-                        height: 40,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Add Your ToDo',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Body Content
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: Container(
-                        height: 65.0, // กำหนดความสูงให้เท่ากับ Search
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0), // ขอบมนเท่ากับ Search
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          controller: userTodoListTitleController,
-                          focusNode: titleFocus,
-                          decoration: const InputDecoration(
-                            hintText: 'Title',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                          ),
-                          onFieldSubmitted: (_) {
-                            titleFocus.unfocus();
-                            FocusScope.of(context).requestFocus(descFocus);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: Container(
-                        height: 175.0, // กำหนดความสูงให้เท่ากับ Search
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0), // ขอบมนเท่ากับ Search
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          controller: userTodoListDescController,
-                          focusNode: descFocus,
-                          decoration: const InputDecoration(
-                            hintText: 'Description',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                          ),
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).unfocus();
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        height: MediaQuery.of(context).size.height * 0.06,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 17.0),
-                              child: Text(
-                                'Success',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF0D7A5C),
-                                )
-                              ),
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isSwitchedOn = !isSwitchedOn;
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Image.asset(
-                                  isSwitchedOn ? 'assets/images/switch_on.png' : 'assets/images/switch_off.png',
-                                  width: 35,
-                                  height: 35,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 280),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0), // padding left and right
-                      child: SizedBox(
-                        width: 410,
-                        height: 70,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                            ),
-                            onPressed: () {
-                              if (userTodoListId.isNotEmpty) {
-                                updateToDo(
-                                  userTodoListTitleController.text,
-                                  userTodoListDescController.text,
-                                );
-                              } else {
-                                createToDo(
-                                  userTodoListTitleController.text,
-                                  userTodoListDescController.text,
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'SAVE',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
           ),
         ],
+      );
+    },
+  );
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            // Custom AppBar
+            PreferredSize(
+              preferredSize: const Size.fromHeight(105.0), // hieght
+              child: Container(
+                height: 105, // hieght
+                padding: const EdgeInsets.only(left: 20, top: 50, bottom: 10), // เพิ่ม padding ด้านบน
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: <Color>[
+                      Color.fromRGBO(76, 197, 153, 1),
+                      Color.fromRGBO(13, 122, 92, 1),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [1.0, 1.0],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Transform.translate(
+                  offset: const Offset(0, -5), // เลื่อนลง 10px
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ToDoList(
+                                userData: {
+                                  'user_id': userId,
+                                  'user_fname': userFname,
+                                  'user_lname': userLname,
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image.asset(
+                          'assets/images/icon_arrow_left.png',
+                          color: Colors.white,
+                          width: 40,
+                          height: 40,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Add Your ToDo',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Body Content
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                        child: Container(
+                          height: 65.0, // กำหนดความสูงให้เท่ากับ Search
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15.0), // ขอบมนเท่ากับ Search
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            controller: userTodoListTitleController,
+                            focusNode: titleFocus,
+                            decoration: const InputDecoration(
+                              hintText: 'Title',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                            ),
+                            onFieldSubmitted: (_) {
+                              titleFocus.unfocus();
+                              FocusScope.of(context).requestFocus(descFocus);
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                        child: Container(
+                          height: 175.0, // กำหนดความสูงให้เท่ากับ Search
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15.0), // ขอบมนเท่ากับ Search
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            controller: userTodoListDescController,
+                            focusNode: descFocus,
+                            decoration: const InputDecoration(
+                              hintText: 'Description',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 14.0, horizontal: 16.0),
+                            ),
+                            maxLines: 7, // line
+                            textInputAction: TextInputAction.done, // เปลี่ยนการกระทำของปุ่ม Enter
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context).unfocus();
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 17.0),
+                                child: Text(
+                                  'Success',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF0D7A5C),
+                                  )
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isSwitchedOn = !isSwitchedOn;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Image.asset(
+                                    isSwitchedOn ? 'assets/images/switch_on.png' : 'assets/images/switch_off.png',
+                                    width: 35,
+                                    height: 35,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 280),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0), // padding left and right
+                        child: SizedBox(
+                          width: 410,
+                          height: 70,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF53CD9F), Color(0xFF0D7A5C)],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                              ),
+                              onPressed: () {
+                                if (userTodoListId.isNotEmpty) {
+                                  updateToDo(
+                                    userTodoListTitleController.text,
+                                    userTodoListDescController.text,
+                                  );
+                                } else {
+                                  createToDo(
+                                    userTodoListTitleController.text,
+                                    userTodoListDescController.text,
+                                  );
+                                }
+                              },
+                              child: const Text(
+                                'SAVE',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

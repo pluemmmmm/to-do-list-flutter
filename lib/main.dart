@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      // title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
         textTheme: GoogleFonts.outfitTextTheme(), // use outfit all project
       ),
-      home: SplashScreen(),
+      home: const SplashScreen(),
       routes: {
         '/home': (context) => const SignIn(),
         '/sign_up': (context) => const SignUp(),
