@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
+import 'package:my_app/screen/sign_in_screen.dart';
+import 'package:my_app/service/sign_up_service.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -24,82 +24,7 @@ class _SignUpState extends State<SignUp> {
   final FocusNode passwordFocusNode = FocusNode();
 
   Future<void> signUp(String email, String password, String userFname, String userLname) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.91.114.48:6004/api/create_user'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-        },
-        body: jsonEncode(<String, String>{
-          'user_fname': userFname,
-          'user_lname': userLname,
-          'user_email': email,
-          'user_password': password,
-        }),
-      );
-      if (response.statusCode == 200) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/home',
-        );
-      } else if (response.statusCode == 400 &&
-          response.body == '{"message":"This e-mail has already been used.."}') {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.warning, color: Colors.orange, size: 40.0,),
-                ],
-              ),
-              content:const Text('Email already exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
-              actions: <Widget>[
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: <Color>[
-                          Color.fromRGBO(76, 197, 153, 1),
-                          Color.fromRGBO(13, 122, 92, 1),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        'OK',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to sign up')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection')),
-      );
-    }
+    await SignUpService.signUp(context, email, password, userFname, userLname);
   }
 
   @override
@@ -134,8 +59,11 @@ class _SignUpState extends State<SignUp> {
                               alignment: Alignment.topLeft,
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pushReplacementNamed(
-                                      context, '/home');
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const SignIn()),
+                                    (Route<dynamic> route) => false,
+                                  );
                                 },
                                 child: Image.asset(
                                   'assets/images/icon_arrow_left.png',
@@ -286,7 +214,10 @@ class _SignUpState extends State<SignUp> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
-                              } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
+                              } else if (!value.contains('@') ||
+                                  !value.endsWith('.com') ||
+                                  (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) ||
+                                  (RegExp(r'[ก-๙]').hasMatch(value))) {
                                 return 'Please enter a valid email';
                               }
                               return null;

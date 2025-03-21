@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:my_app/screen/to_do_list_screen.dart';
+import 'package:my_app/service/to_do_service.dart';
 
 class AddToDo extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -37,7 +36,7 @@ class _AddToDoState extends State<AddToDo> {
     userFname = userData?['user_fname'] ?? '';
     userLname = userData?['user_lname'] ?? '';
     userId = userData?['user_id']?.toString() ?? '';
-    userTodoListId = userData?['user_todo_list_id']?.toString() ?? ''; 
+    userTodoListId = userData?['user_todo_list_id']?.toString() ?? '';
 
     if (userTodoListId.isNotEmpty) {
       fetchTodoDetails(); // ดึงข้อมูลถ้ามี user_todo_list_id
@@ -54,236 +53,52 @@ class _AddToDoState extends State<AddToDo> {
     super.dispose();
   }
 
-  Future<void>fetchTodoDetails() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://10.91.114.48:6004/api/todo_list/$userId'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-        },
-      );
-      // print('1214 ${response.body}');
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-
-        final todoItem = data.firstWhere(
-          (item) => item['user_todo_list_id'].toString() == userTodoListId,
-          orElse: () => null,
-        );
-
-        if (todoItem != null) {
-          setState(() {
-            userTodoListTitleController.text = todoItem['user_todo_list_title'] ?? '';
-            userTodoListDescController.text = todoItem['user_todo_list_desc'] ?? '';
-            switch (todoItem['user_todo_list_completed']) {
-              case 'true':
-                isSwitchedOn = true;
-                break;
-              case 'false':
-                isSwitchedOn = false;
-                break;
-              default:
-                isSwitchedOn = false;
-                break;
-            }
-          });
-        } else {
-          print('ToDo item not found');
+  // Call API
+  Future<void> fetchTodoDetails() async {
+    final todoItem = await ToDoService.fetchTodoDetails(context, userId, userTodoListId);
+    if (todoItem != null) {
+      setState(() {
+        userTodoListTitleController.text = todoItem['user_todo_list_title'] ?? '';
+        userTodoListDescController.text = todoItem['user_todo_list_desc'] ?? '';
+        switch (todoItem['user_todo_list_completed']) {
+          case 'true':
+            isSwitchedOn = true;
+            break;
+          case 'false':
+            isSwitchedOn = false;
+            break;
+          default:
+            isSwitchedOn = false;
+            break;
         }
-      } else {
-        print('Failed to load ToDo details');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-
-  Future<void>createToDo(String userTodoListTitle, String userTodoListDesc) async {
-    try {
-      final body = jsonEncode(<String, String>{
-        'user_todo_type_id': '1',
-        'user_todo_list_title': userTodoListTitle,
-        'user_todo_list_desc': userTodoListDesc,
-        'user_todo_list_completed': isSwitchedOn.toString(),
-        'user_id': userId,
       });
-      final response = await http.post(
-        Uri.parse('http://10.91.114.48:6004/api/create_todo'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-        },
-        body: body,
-      );
-      // print('Response Body: ${response.body}');
-      if (response.statusCode == 200) {
-      final responseData = response.body;
-      // print('Response: $responseData');
-      try {
-        final Map<String, dynamic> data = jsonDecode(responseData);
-        if (data.containsKey('code') && data['code'] == 'ER_DATA_TOO_LONG') {
-          _showErrorDialog(context, 'ข้อมูลยาวเกินไป', 'กรุณาปรับลดความยาวของข้อมูลที่กรอก');
-          return;
-        }
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => ToDoList(userData: data)),
-          (Route<dynamic> route) => false,
-        );
-      } catch (e) {
-        if (response.body == 'OK') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ToDo created successfully')),
-          );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => ToDoList(
-                userData: {
-                  'user_id': userId,
-                  'user_fname': userFname,
-                  'user_lname': userLname,
-                },
-              ),
-            ),
-            (Route<dynamic> route) => false,
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('An unexpected error occurred.')),
-          );
-        }
-      }
-    } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save')),
-        );
-      }
-    } catch (e) {
-      print('error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection')),
-      );
     }
   }
 
-  Future<void>updateToDo(String userTodoListTitle, String userTodoListDesc) async {
-    try {
-    final body = jsonEncode({
-      'user_todo_list_id': userTodoListId,
-      'user_todo_list_title': userTodoListTitle,
-      'user_todo_list_desc': userTodoListDesc,
-      'user_todo_list_completed': isSwitchedOn.toString(),
-      'user_id': userId,
-      'user_todo_type_id': '1',
-    });
-
-    final response = await http.post(
-      Uri.parse('http://10.91.114.48:6004/api/update_todo'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-      },
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = response.body;
-      // print('Response: $responseData');
-      try {
-        final Map<String, dynamic> data = jsonDecode(responseData);
-        if (data.containsKey('code') && data['code'] == 'ER_DATA_TOO_LONG') {
-          _showErrorDialog(context, 'ข้อมูลยาวเกินไป', 'กรุณาปรับลดความยาวของข้อมูลที่กรอก');
-          return;
-        }
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => ToDoList(userData: data)),
-          (Route<dynamic> route) => false,
-        );
-      } catch (e) {
-        if (response.body == 'OK') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ToDo created successfully')),
-          );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => ToDoList(
-                userData: {
-                  'user_id': userId,
-                  'user_fname': userFname,
-                  'user_lname': userLname,
-                },
-              ),
-            ),
-            (Route<dynamic> route) => false,
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('An unexpected error occurred.')),
-          );
-        }
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update ToDo')),
-      );
-    }
-  } catch (e) {
-    print('Error: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No internet connection')),
+  Future<void> createToDo(String userTodoListTitle, String userTodoListDesc) async {
+    await ToDoService.createToDo(
+      context,
+      userId,
+      userFname,
+      userLname,
+      userTodoListTitle,
+      userTodoListDesc,
+      isSwitchedOn,
     );
   }
-}
 
-void _showErrorDialog(BuildContext context, String title, String message) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.warning, color: Colors.orange, size: 40.0,),
-          ],
-        ),
-        content:const Text('Input is too long', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
-        actions: <Widget>[
-          Center(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: <Color>[
-                    Color.fromRGBO(76, 197, 153, 1),
-                    Color.fromRGBO(13, 122, 92, 1),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'OK',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-}
+  Future<void> updateToDo(String userTodoListTitle, String userTodoListDesc) async {
+    await ToDoService.updateToDo(
+      context,
+      userTodoListId,
+      userTodoListTitle,
+      userTodoListDesc,
+      isSwitchedOn,
+      userId,
+      userFname,
+      userLname,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -452,8 +267,7 @@ void _showErrorDialog(BuildContext context, String title, String message) {
                                 hintText: 'Description',
                                 hintStyle: TextStyle(color: Colors.grey),
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 14.0, horizontal: 16.0),
+                                contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                               ),
                               maxLines: 7, // line
                               textInputAction: TextInputAction.done, // เปลี่ยนการกระทำของปุ่ม Enter

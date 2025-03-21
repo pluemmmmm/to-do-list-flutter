@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:my_app/controller/network_controller.dart';
-import 'package:http/http.dart' as http;
-import 'package:my_app/screen/to_do_list_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:my_app/screen/sign_up_screen.dart';
+import 'package:my_app/service/sign_in_service.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -23,104 +21,9 @@ class _SignInState extends State<SignIn> {
   bool _obscureText = true;
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
-  
+
   Future<void> signIn(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.91.114.48:6004/api/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
-        },
-        body: jsonEncode(<String, String>{
-          'user_email': email,
-          'user_password': password,
-        }),
-      );
-      // print('1234: ${response.statusCode}');
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-
-        if (data.containsKey('user_id') &&
-            data.containsKey('user_email') &&
-            data.containsKey('user_fname') &&
-            data.containsKey('user_lname')) {
-          // Save user data to SharedPreferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('user_id', data['user_id'].toString());
-          await prefs.setString('user_email', data['user_email']);
-          await prefs.setString('user_fname', data['user_fname']);
-          await prefs.setString('user_lname', data['user_lname']);
-          await prefs.setBool('is_logged_in', true);
-
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => ToDoList(userData: data)),
-            (Route<dynamic> route) => false,
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid response from server')),
-          );
-        }
-      } else if (response.statusCode == 400 && response.body == '{"message":"Email or password is incorrect."}') {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.warning, color: Colors.orange, size: 40.0,),
-                ],
-              ),
-              content:const Text('Email or password is incorrect', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
-              actions: <Widget>[
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: <Color>[
-                          Color.fromRGBO(76, 197, 153, 1),
-                          Color.fromRGBO(13, 122, 92, 1),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        'OK',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        print('Failed to sign in: ${response.statusCode}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign in: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
-      print('An error occurred: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
-    }
+    await SignInService.signIn(context, email, password);
   }
 
   @override
@@ -216,7 +119,10 @@ class _SignInState extends State<SignIn> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
-                            } else if (!value.contains('@') || !value.endsWith('.com') || (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) || (RegExp(r'[ก-๙]').hasMatch(value))) {
+                            } else if (!value.contains('@') ||
+                                !value.endsWith('.com') ||
+                                (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) ||
+                                (RegExp(r'[ก-๙]').hasMatch(value))) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -348,7 +254,11 @@ class _SignInState extends State<SignIn> {
                               backgroundColor: Colors.transparent,
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed('/sign_up');
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SignUp()), // แทนที่ SignUp ด้วยหน้าที่คุณต้องการ
+                                (Route<dynamic> route) => false,
+                              );
                             },
                             child: const Text(
                               'SIGN UP',
