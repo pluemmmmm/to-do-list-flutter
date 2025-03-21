@@ -57,7 +57,7 @@ class _AddToDoState extends State<AddToDo> {
   Future<void>fetchTodoDetails() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.91.114.28:6004/api/todo_list/$userId'),
+        Uri.parse('http://10.91.114.48:6004/api/todo_list/$userId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
@@ -109,7 +109,7 @@ class _AddToDoState extends State<AddToDo> {
         'user_id': userId,
       });
       final response = await http.post(
-        Uri.parse('http://10.91.114.28:6004/api/create_todo'),
+        Uri.parse('http://10.91.114.48:6004/api/create_todo'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
@@ -179,7 +179,7 @@ class _AddToDoState extends State<AddToDo> {
     });
 
     final response = await http.post(
-      Uri.parse('http://10.91.114.28:6004/api/update_todo'),
+      Uri.parse('http://10.91.114.48:6004/api/update_todo'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer 950b88051dc87fe3fcb0b4df25eee676',
