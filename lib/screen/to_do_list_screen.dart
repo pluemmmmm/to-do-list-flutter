@@ -430,7 +430,8 @@ class _ToDoListState extends State<ToDoList> {
                       } else if (snapshot.hasError) { // Error
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) { // Empty
-                        return Center(
+                        return Container(
+                          margin: const EdgeInsets.only(top: 50.0), // เพิ่ม margin top 20.0
                           child: Text(
                             'No Data',
                             style: TextStyle(
