@@ -14,6 +14,7 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  //TextEditingController for manage text input
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -28,10 +29,10 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold( // Basic design of the screen (layout and other)
       // appBar: AppBar(),
       resizeToAvoidBottomInset: false, //for prevent the keyboard from pushing the background
-      body: GestureDetector(
+      body: GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
         onTap: () {
           FocusScope.of(context).unfocus();
         },
@@ -89,31 +90,31 @@ class _SignInState extends State<SignIn> {
                     const SizedBox(height: 40),
                     Padding(
                       padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                      child: Container(
-                        decoration: BoxDecoration(
+                      child: Container( // For adjust colors, size and other properties
+                        decoration: BoxDecoration( //มักใช้กับ Container หรือ BoxDecoration เพื่อกำหนดสไตล์ เช่น สีพื้นหลัง, เส้นขอบ, เงา เป็นต้น
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(12.0),
                           boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.6),
+                            BoxShadow( //Shadow for objects
+                              color: Colors.grey.withOpacity(0.6), // For manage ความทึบ
                               spreadRadius: 1,
                               blurRadius: 1,
                               offset: const Offset(0, 1),
                             ),
                           ],
                         ),
-                        child: TextFormField(
+                        child: TextFormField( // For validation
                           controller: emailController,
                           focusNode: emailFocusNode,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], // Add this line
-                          decoration: const InputDecoration(
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], // For dont space bar
+                          decoration: const InputDecoration( // For custom input
                             border: InputBorder.none,
                             labelText: 'Email',
-                            filled: true,
+                            filled: true, //กำหนดให้พื้นหลังของช่องกรอกข้อมูลถูกเติมสี
                             fillColor: Colors.transparent,
                           ),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onFieldSubmitted: (_) {
+                          onFieldSubmitted: (_) { // Out of Keyboard
                             FocusScope.of(context).requestFocus(passwordFocusNode);
                           },
                           validator: (value) {
@@ -140,15 +141,15 @@ class _SignInState extends State<SignIn> {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.6),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
+                              spreadRadius: 1, // การกระจายของเงา ออกไปจากขอบของวัตถุ
+                              blurRadius: 1, // ความเบลอของเงา ถ้ายิ่งเพิ่มค่ามาก เงาจะยิ่งฟุ้งและกระจายมากขึ้น
+                              offset: const Offset(0, 1), // Shadow for x and y
                             ),
                           ],
                         ),
                         child: TextFormField(
                           controller: passwordController,
-                          focusNode: passwordFocusNode,
+                          focusNode: passwordFocusNode, // For next timing
                           inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], // Add this line
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -162,7 +163,7 @@ class _SignInState extends State<SignIn> {
                                 size: 20.0,
                               ),
                               onPressed: () {
-                                setState(() {
+                                setState(() { // Check change states for new state
                                   _obscureText = !_obscureText;
                                 });
                               },
@@ -219,7 +220,7 @@ class _SignInState extends State<SignIn> {
                               backgroundColor: Colors.transparent,
                             ),
                             onPressed: () {
-                              if (formKey.currentState!.validate()) {
+                              if (formKey.currentState!.validate()) { // Check Form formKey ถ้าฟอร์มถูกต้อง (validate() คืนค่าเป็น true) จะทำการเรียกฟังก์ชัน signIn
                                 signIn(emailController.text, passwordController.text);
                               }
                             },
@@ -242,7 +243,7 @@ class _SignInState extends State<SignIn> {
                         height: 70,
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: const LinearGradient( // ใช้สำหรับการสร้างการไล่ระดับสี
                               colors: [Color(0xFF0D7A5C), Color(0xFF0D7A5C)],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,

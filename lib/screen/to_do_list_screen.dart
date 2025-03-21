@@ -26,7 +26,7 @@ class _ToDoListState extends State<ToDoList> {
   late Future<List<dynamic>> toDoList;
 
   TextEditingController searchController = TextEditingController();
-  String searchQuery = '';
+  String searchInput = '';
 
   @override
   void initState() {
@@ -54,8 +54,7 @@ class _ToDoListState extends State<ToDoList> {
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
-    return WillPopScope(
-      //manage back button on telephone
+    return WillPopScope( // Manage back button on telephone
       onWillPop: () async {
         bool shouldPop = await showDialog(
           context: context,
@@ -162,7 +161,7 @@ class _ToDoListState extends State<ToDoList> {
             automaticallyImplyLeading: false,
             leading: Padding(
               padding: const EdgeInsets.only(left: 16.0, top: 10.0),
-              child: GestureDetector(
+              child: GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
@@ -366,13 +365,13 @@ class _ToDoListState extends State<ToDoList> {
               ),
             ),
           ),
-          body: RefreshIndicator(
+          body: RefreshIndicator( // For refresh page
             onRefresh: () async {
               getToDoListById();
             },
             color: const Color.fromRGBO(13, 122, 92, 1),
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(), //จะทำให้วิดเจ็ตสามารถเลื่อนได้เสมอ แม้ว่าจะมีเนื้อหาน้อยกว่าพื้นที่ที่สามารถแสดงผลได้
               child: Column(
                 children: [
                   Padding(
@@ -396,11 +395,11 @@ class _ToDoListState extends State<ToDoList> {
                           controller: searchController,
                           onChanged: (value) {
                             setState(() {
-                              searchQuery = value.toLowerCase();
+                              searchInput = value.toLowerCase();
                             });
                           },
                           style: const TextStyle(fontSize: 18.0),
-                          decoration: InputDecoration(
+                          decoration: InputDecoration( // For custom input
                             hintText: 'Search.......',
                             hintStyle: const TextStyle(color: Colors.grey),
                             prefixIcon: const Icon(Icons.search_sharp, color: Colors.grey),
@@ -411,26 +410,26 @@ class _ToDoListState extends State<ToDoList> {
                                 onPressed: () {
                                   setState(() {
                                     searchController.clear();
-                                    searchQuery = '';
+                                    searchInput = '';
                                   });
                                 },
                               ),
                             ),
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0), // vertical Y, horizontal X
                           ),
                         ),
                       ),
                     ),
                   ),
-                  FutureBuilder<List<dynamic>>(
-                    future: toDoList,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                  FutureBuilder<List<dynamic>>( // เพื่อสร้างวิดเจ็ตที่ขึ้นอยู่กับผลลัพธ์ของ Future
+                    future: toDoList, // Future
+                    builder: (context, snapshot) { // Snapshot for keep status of Future
+                      if (snapshot.connectionState == ConnectionState.waiting) { // loading
                         return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
+                      } else if (snapshot.hasError) { // Error
                         return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) { // Empty
                         return Center(
                           child: Text(
                             'No Data',
@@ -442,12 +441,12 @@ class _ToDoListState extends State<ToDoList> {
                           ),
                         );
                       } else {
-                        var filteredList = snapshot.data!.where((item) {
-                          return item['user_todo_list_title'].toLowerCase().contains(searchQuery);
+                        var filteredList = snapshot.data!.where((item) { // filteredList ถ้ามีข้อมูล จะกรองรายการตาม searchInput ที่ผู้ใช้ป้อนเข้ามา
+                          return item['user_todo_list_title'].toLowerCase().contains(searchInput);
                         }).toList();
 
                         return ListView.builder(
-                          shrinkWrap: true,
+                          shrinkWrap: true, // เพื่อให้ ListView ไม่เลื่อนเอง (เหมาะกับการใช้ใน SingleChildScrollView)
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: filteredList.length,
                           itemBuilder: (context, index) {
@@ -487,8 +486,8 @@ class _ToDoListState extends State<ToDoList> {
                   ),
                 );
               },
-              child: Transform.scale(
-                scale: 1.5,
+              child: Transform.scale( // For scale FloatingActionButton
+                scale: 1.5, // Size of FloatingActionButton
                 child: Image.asset(
                   'assets/images/icon_calendar.png',
                   width: 45.0,

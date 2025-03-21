@@ -30,7 +30,7 @@ class _AddToDoState extends State<AddToDo> {
   final FocusNode descFocus = FocusNode();
 
   @override
-  void initState() {
+  void initState() { // เกิดอะไรขึ้นหลังจาก render ครั้งแรก
     super.initState();
     userData = widget.userData;
     userFname = userData?['user_fname'] ?? '';
@@ -102,7 +102,7 @@ class _AddToDoState extends State<AddToDo> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
       onTap: () {
         FocusScope.of(context).unfocus();
       },
@@ -138,7 +138,7 @@ class _AddToDoState extends State<AddToDo> {
                   offset: const Offset(0, -5), // เลื่อนลง 10px
                   child: Row(
                     children: [
-                      GestureDetector(
+                      GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
                         onTap: () {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
@@ -175,7 +175,7 @@ class _AddToDoState extends State<AddToDo> {
               ),
             ),
             // Body Content
-            Expanded(
+            Expanded( // มักจะใช้ร่วมกับ Row หรือ Column เพื่อให้ลูกวิดเจ็ตขยายขนาดตามพื้นที่ที่เหลืออยู่
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
@@ -210,8 +210,8 @@ class _AddToDoState extends State<AddToDo> {
                                 ),
                                 controller: userTodoListTitleController,
                                 focusNode: titleFocus,
-                                textAlignVertical: TextAlignVertical.center,
-                                decoration: const InputDecoration(
+                                textAlignVertical: TextAlignVertical.center, //vertical Y, horizontal X
+                                decoration: const InputDecoration( // For custom input
                                   hintText: 'Title',
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
@@ -311,19 +311,19 @@ class _AddToDoState extends State<AddToDo> {
                             ),
                             child: Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 17.0),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 17.0),
                                   child: Text(
                                     'Success',
-                                    style: GoogleFonts.roboto(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF0D7A5C),
+                                      color: Color(0xFF0D7A5C),
                                     ),
                                   ),
                                 ),
-                                const Spacer(),
-                                GestureDetector(
+                                const Spacer(), // For left align
+                                GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
                                   onTap: () {
                                     setState(() {
                                       isSwitchedOn = !isSwitchedOn;

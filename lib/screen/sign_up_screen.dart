@@ -31,7 +31,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true, // can up or down for touch
-      body: GestureDetector(
+      body: GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
         onTap: () {
           FocusScope.of(context).unfocus();
         },
@@ -57,12 +57,12 @@ class _SignUpState extends State<SignUp> {
                             padding: const EdgeInsets.only(left: 20.0),
                             child: Align(
                               alignment: Alignment.topLeft,
-                              child: GestureDetector(
+                              child: GestureDetector( // For focus out of keyboard and (การกระทำที่เกิดขึ้นเมื่อมีการแตะหน้าจอ)
                                 onTap: () {
                                   Navigator.pushAndRemoveUntil(
                                     context,
-                                    MaterialPageRoute(builder: (context) => const SignIn()),
-                                    (Route<dynamic> route) => false,
+                                    MaterialPageRoute(builder: (context) => const SignIn()), // เป็นการสร้างเส้นทางใหม่ไปยังหน้าจอที่กำหนด
+                                    (Route<dynamic> route) => false, // If true will keep the old screen
                                   );
                                 },
                                 child: Image.asset(
@@ -123,7 +123,7 @@ class _SignUpState extends State<SignUp> {
                             controller: userFnameController,
                             focusNode: fnameFocusNode,
                             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                            decoration: const InputDecoration(
+                            decoration: const InputDecoration( // For custom input
                               border: InputBorder.none,
                               labelText: 'First name',
                               filled: true,
