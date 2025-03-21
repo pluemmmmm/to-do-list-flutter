@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_app/components/text_color.dart';
 import 'package:my_app/components/to_do_card.dart';
 import 'package:my_app/screen/add_to_do_screen.dart';

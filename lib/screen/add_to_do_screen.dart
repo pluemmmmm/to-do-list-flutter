@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_app/screen/to_do_list_screen.dart';
 import 'package:my_app/service/to_do_service.dart';
 
